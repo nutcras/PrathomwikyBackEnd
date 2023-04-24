@@ -1,5 +1,5 @@
 const validate_req = require('../models/validate_req.models')
-const mysql = require('../models/mysql.models')
+const mysql = require('../models/query_code')
 const { verifyingHash, hashPassword } = require('../models/hashing.models')
 const { sign } = require('../models/middleware.models')
 const {uploadImageAvatar} = require('../models/supabase')

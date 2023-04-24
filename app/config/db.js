@@ -1,34 +1,26 @@
-const mysql = require('mysql') // เรียกใช้งาน MySQL module
+const { Pool } = require('pg'); // เรียกใช้งาน pg module
 
 // กำหนดการเชื่อมต่อฐานข้อมูล
-const db = mysql.createConnection({
-  // ip ของ sql
-  host: process.env.DB_HOST,
-  // port ของ sql
-  port: process.env.DB_PORT,
-  // username ของ sql
+const pool = new Pool({
   user: process.env.DB_USER,
-  // password ของ sql
-  password: process.env.DB_PASSWORD,
-  // ชื่อ data ของ sql
+  host: process.env.DB_HOST,
   database: process.env.DB_DATABASE,
-  acquireTimeout: 1000000
-})
-
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+});
 // ทำการเชื่อมต่อกับฐานข้อมูล
-db.connect((err) => {
+pool.connect((err, client, release) => {
   if (err) {
     // กรณีเกิด error
-    console.error('error connecting: ' + err.stack)
+    return console.error('Error acquiring client', err.stack)
   }
-  if('close', function(e) {
-    client.setTimeout(10000, function() {
-        client.connect(HOST_PORT, HOST_IP);
-    })
-});
-
-  // console.log('connected db as id ' + db.threadId)
+  client.query('SELECT NOW()', (err, result) => {
+    release();
+    if (err) {
+      return console.error('Error executing query', err.stack)
+    }
+    console.log('Connected to PostgreSQL database at:', result.rows[0].now);
+  })
 })
-// ปิดการเชื่อมต่อฐานข้อมูล MySQL ในที่นี้เราจะไม่ให้ทำงาน
-// db.end()
-module.exports = db
+
+module.exports = pool;
