@@ -175,49 +175,6 @@ exports.finddatework = async (req, res) => {
   })
 }
 
-exports.updateprofile1 = async (req, res) => {
-  // ดึงข้อมูลจาก request
-  const { oldpassword, password } = req.body
-  // ดึงข้อมูลจาก params
-  const { id } = req.params
-  // ตรวจสอบความถูกต้อง request
-  if (validate_req(req, res, [oldpassword, password, id])) return
-  // คำสั่ง SQL
-  const sql = `SELECT men_password FROM mentor WHERE men_id = ${id}`
-  await mysql.get(sql, (err, data) => {
-    if (err)
-      res.status(err.status).send({
-        message: err.message || 'Some error occurred.',
-      })
-    else if (
-      res.status(200) &&
-      data[0] &&
-      verifyingHash(oldpassword, data[0].men_password)
-    ) {
-      delete data[0].password
-      const sql1 = `UPDATE mentor SET men_password = ? WHERE men_id = ?`
-      // ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
-      const data1 = [hashPassword(password), id]
-      // แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
-
-      mysql.update(sql1, data1, (err, data1) => {
-        if (err)
-          res.status(err.status).send({
-            message: err.message || 'Some error occurred.',
-          })
-        else {
-          res
-            .status(200)
-            .send({ data: data1[0], message: 'Password ถูกเปลี่ยนแล้ว' })
-        }
-      })
-    } else {
-      res.status(204).send({
-        message: 'Password Not Same!.',
-      })
-    }
-  })
-}
 
 exports.updateprofile2 = async (req, res) => {
   // ดึงข้อมูลจาก request
