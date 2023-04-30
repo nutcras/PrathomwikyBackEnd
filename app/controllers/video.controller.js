@@ -1,23 +1,20 @@
 const validate_req = require('../models/validate_req.models')
 const database = require('../models/query_code')
-const { verifyingHash, hashPassword } = require('../models/hashing.models')
-const { sign } = require('../models/middleware.models')
 
 
 exports.create = async (req, res) => {
   // ดึงข้อมูลจาก request
   const {
-    id,
-    name,
-    surname,
-    email,
-    password
+    videoname,
+    videolink,
+    videodesc,
+    adminId
   } = req.body
-  if (validate_req(req, res, [email, password])) return
+  if (validate_req(req, res, [videoname, videolink, adminId])) return
   // คำสั่ง SQL
-  const sql = `INSERT INTO admin (adminId, adminname, adminsurname, adminemail, adminpassword)
-  VALUES ($1, $2, $3, $4, $5);`;
-const values = [id, name, surname, email, hashPassword(password)];
+  const sql = `INSERT INTO video ( videoname, videolink, videodesc, adminId)
+  VALUES ($1, $2, $3, $4);`;
+const values = [videoname, videolink, videodesc, adminId];
 
 await database.create(sql, values, async (err, data) => {
   if (err) {
@@ -32,10 +29,10 @@ await database.create(sql, values, async (err, data) => {
 
 }
 
-exports.findAdmin = async (req, res) => {
+exports.findAll = async (req, res) => {
   // คำสั่ง SQL
-  const sql = `SELECT * FROM admin ORDER BY
-  adminId ASC;`
+  const sql = `SELECT * FROM video ORDER BY
+  videoId ASC;`
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.get(sql, (err, data) => {
     if (err)
@@ -48,10 +45,10 @@ exports.findAdmin = async (req, res) => {
   })
 }
 
-exports.findAdminById = async (req, res) => {
+exports.findById = async (req, res) => {
   // คำสั่ง SQL
   const { id } = req.params
-  const sql = `SELECT * FROM admin WHERE adminId = ${id}`
+  const sql = `SELECT * FROM video WHERE videoId = ${id}`
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.get(sql, (err, data) => {
     if (err)
@@ -70,15 +67,15 @@ exports.findAdminById = async (req, res) => {
 
 exports.update = async (req, res) => {
   // ดึงข้อมูลจาก request
-  const {name,surname,email} = req.body
+  const {videoname, videolink, videodesc, adminid} = req.body
   // ดึงข้อมูลจาก params
   const { id } = req.params
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id])) return
   // // คำสั่ง SQL
-  const sql = 'UPDATE admin SET adminName = $1, adminSurname = $2, adminEmail = $3 WHERE adminId = $4';
+  const sql = 'UPDATE video SET videoname = $1, videolink = $2, videodesc = $3, adminid = $4 WHERE videoId = $5';
   // // ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
-  const data = [name, surname, email, id]
+  const data = [videoname, videolink, videodesc, adminid, id]
   // // แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.update(sql, data, (err) => {
     if (err)
@@ -98,7 +95,7 @@ exports.deleteOne = async (req, res) => {
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id])) return
   // คำสั่ง SQL
-  const sql = `DELETE FROM admin WHERE adminId = $1`
+  const sql = `DELETE FROM video WHERE videoId = $1`
   // ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
   const data = [id]
   // ลบข้อมูล โดยส่งคำสั่ง SQL และ id เข้าไป
@@ -114,22 +111,4 @@ exports.deleteOne = async (req, res) => {
   })
 }
 
-exports.login = async (req, res) => {
-  const { email, password } = req.body
-  if (validate_req(req, res[(email, password)])) return
 
-  const sql = `SELECT * FROM admin WHERE adminEmail = '${email}'`
-
-  await database.get(sql, async (err, data) => {
-    if (err)
-      res.status(err.status).send({
-        message: err.message || 'Some error occurred.',
-      })
-    else if (data.rows[0] && verifyingHash(password, data.rows[0].adminpassword)) {
-      data.rows[0].token = await sign({ id: data.rows[0].adminId }, '2d')
-      delete data.rows[0].adminpassword
-      res.status(200).json(data.rows[0])
-    } else res.status(204).end()
-    
-  })
-}

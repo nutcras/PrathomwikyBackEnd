@@ -1,7 +1,7 @@
 module.exports = (app) => {
   const router = require('express').Router()
   const { verify } = require('../models/middleware.models.js')
-  const multer  = require('multer')
+
 
   const {
     create,
