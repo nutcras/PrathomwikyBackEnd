@@ -5,16 +5,15 @@ const database = require('../models/query_code')
 exports.create = async (req, res) => {
   // ดึงข้อมูลจาก request
   const {
-    videoname,
-    videolink,
-    videodesc,
-    adminId
+    imageName,
+    imagelink,
+    tagId
   } = req.body
-  if (validate_req(req, res, [videoname, videolink, adminId])) return
+  if (validate_req(req, res, [imageName, imagelink, tagId])) return
   // คำสั่ง SQL
-  const sql = `INSERT INTO video ( videoname, videolink, videodesc, adminId)
+  const sql = `INSERT INTO image ( imagename, imagelink,  tagId)
   VALUES ($1, $2, $3, $4);`;
-const values = [videoname, videolink, videodesc, adminId];
+const values = [imagename, imagelink,  tagId];
 
 await database.create(sql, values, async (err, data) => {
   if (err) {
@@ -31,11 +30,8 @@ await database.create(sql, values, async (err, data) => {
 
 exports.findAll = async (req, res) => {
   // คำสั่ง SQL
-  const sql = `SELECT v.*, vd.* FROM video v
-  LEFT JOIN videoDetail vd
-  ON vd.videoId = v.videoId
-  ORDER BY
-  videoId ASC;`
+  const sql = `SELECT * FROM image ORDER BY
+  imageId ASC;`
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.get(sql, (err, data) => {
     if (err)
@@ -51,7 +47,7 @@ exports.findAll = async (req, res) => {
 exports.findById = async (req, res) => {
   // คำสั่ง SQL
   const { id } = req.params
-  const sql = `SELECT * FROM video WHERE videoId = ${id}`
+  const sql = `SELECT * FROM image WHERE imageId = ${id}`
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.get(sql, (err, data) => {
     if (err)
@@ -70,15 +66,15 @@ exports.findById = async (req, res) => {
 
 exports.update = async (req, res) => {
   // ดึงข้อมูลจาก request
-  const {videoname, videolink, videodesc, adminid} = req.body
+  const {imageName, imageLink,  tagId} = req.body
   // ดึงข้อมูลจาก params
   const { id } = req.params
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id])) return
   // // คำสั่ง SQL
-  const sql = 'UPDATE video SET videoname = $1, videolink = $2, videodesc = $3, adminid = $4 WHERE videoId = $5';
+  const sql = 'UPDATE image SET imagename = $1, imagelink = $2, imagedesc = $3, adminid = $4 WHERE imageId = $5';
   // // ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
-  const data = [videoname, videolink, videodesc, adminid, id]
+  const data = [imageName, imageLink,  tagId, id]
   // // แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.update(sql, data, (err) => {
     if (err)
@@ -98,7 +94,7 @@ exports.deleteOne = async (req, res) => {
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id])) return
   // คำสั่ง SQL
-  const sql = `DELETE FROM video WHERE videoId = $1`
+  const sql = `DELETE FROM image WHERE imageId = $1`
   // ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
   const data = [id]
   // ลบข้อมูล โดยส่งคำสั่ง SQL และ id เข้าไป
