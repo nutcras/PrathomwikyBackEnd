@@ -8,9 +8,10 @@ exports.create = async (req, res) => {
     videoname,
     videolink,
     videodesc,
+    typeId,
     adminId
   } = req.body
-  if (validate_req(req, res, [videoname, videolink, adminId])) return
+  if (validate_req(req, res, [videoname, videolink, typeId,  adminId])) return
   // คำสั่ง SQL
   const sql = `INSERT INTO video ( videoname, videolink, videodesc, adminId)
   VALUES ($1, $2, $3, $4);`;
@@ -30,10 +31,13 @@ await database.create(sql, values, async (err, data) => {
 }
 
 exports.findAll = async (req, res) => {
+
+  const {typeId} = req.params
   // คำสั่ง SQL
   const sql = `SELECT v.*, vd.* FROM video v
   LEFT JOIN videoDetail vd
   ON vd.videoId = v.videoId
+  WHERE v.typeId = ${typeId}
   ORDER BY
   videoId ASC;`
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
@@ -47,6 +51,9 @@ exports.findAll = async (req, res) => {
     } else res.status(204).end()
   })
 }
+
+
+
 
 exports.findById = async (req, res) => {
   // คำสั่ง SQL
