@@ -15,3 +15,4 @@ FROM gcr.io/distroless/nodejs:16
 WORKDIR /app
 COPY --from=build /app /app
 CMD ["index.js"]
+
