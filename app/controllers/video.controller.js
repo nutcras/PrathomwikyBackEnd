@@ -261,7 +261,13 @@ exports.deleteOne = async (req, res) => {
     // คำสั่ง SQL สำหรับลบจากตาราง videodetail
     const deleteVideoDetailSql = 'DELETE FROM videodetail WHERE videoId = $1';
     const videoDetailData = [id];
-    await database.delete(deleteVideoDetailSql, videoDetailData);
+    await database.delete(deleteVideoDetailSql, videoDetailData, (err, _) => {
+      if (err) {
+        res.status(err.status || 500).send({
+          message: err.message || 'Some error occurred.',
+        });
+      } 
+    });
 
     // คำสั่ง SQL สำหรับลบจากตาราง video
     const deleteVideoSql = 'DELETE FROM video WHERE videoId = $1';
