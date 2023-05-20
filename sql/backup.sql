@@ -1,10 +1,10 @@
--- Adminer 4.8.1 PostgreSQL 15.3 dump
+-- Adminer 4.8.1 PostgreSQL 15.2 (Debian 15.2-1.pgdg110+1) dump
 
 \connect "prathomwiky";
 
 DROP TABLE IF EXISTS "admin";
 DROP SEQUENCE IF EXISTS admin_adminid_seq;
-CREATE SEQUENCE admin_adminid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 3 CACHE 1;
+CREATE SEQUENCE admin_adminid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."admin" (
     "adminid" integer DEFAULT nextval('admin_adminid_seq') NOT NULL,
@@ -19,14 +19,13 @@ TRUNCATE "admin";
 
 DROP TABLE IF EXISTS "image";
 DROP SEQUENCE IF EXISTS image_imageid_seq;
-CREATE SEQUENCE image_imageid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 5 CACHE 1;
+CREATE SEQUENCE image_imageid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."image" (
     "imageid" integer DEFAULT nextval('image_imageid_seq') NOT NULL,
     "imagelink" text,
     "imagename" character varying(250),
-    "imagedesc" text,
-    "adminid" integer,
+    "tagid" integer,
     CONSTRAINT "image_pkey" PRIMARY KEY ("imageid")
 ) WITH (oids = false);
 
@@ -62,10 +61,10 @@ INSERT INTO "typedetail" ("typeid", "typedesc") VALUES
 
 DROP TABLE IF EXISTS "video";
 DROP SEQUENCE IF EXISTS video_videoid_seq;
-CREATE SEQUENCE video_videoid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 7 CACHE 1;
+CREATE SEQUENCE video_videoid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."video" (
-    "videoid" uuid DEFAULT uuid_generate_v4() NOT NULL,
+    "videoid" integer DEFAULT nextval('video_videoid_seq') NOT NULL,
     "videoname" character varying(250),
     "videolink" text,
     "videodesc" text,
@@ -89,7 +88,7 @@ CREATE TABLE "public"."videodetail" (
 
 TRUNCATE "videodetail";
 
-ALTER TABLE ONLY "public"."image" ADD CONSTRAINT "image_adminId_fkey" FOREIGN KEY (adminid) REFERENCES admin(adminid) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."image" ADD CONSTRAINT "image_tagid_fkey" FOREIGN KEY (tagid) REFERENCES tag(tagid) NOT DEFERRABLE;
 
 ALTER TABLE ONLY "public"."video" ADD CONSTRAINT "video_adminid_fkey" FOREIGN KEY (adminid) REFERENCES admin(adminid) NOT DEFERRABLE;
 ALTER TABLE ONLY "public"."video" ADD CONSTRAINT "video_typeid_fkey" FOREIGN KEY (typeid) REFERENCES typedetail(typeid) NOT DEFERRABLE;
@@ -97,4 +96,4 @@ ALTER TABLE ONLY "public"."video" ADD CONSTRAINT "video_typeid_fkey" FOREIGN KEY
 ALTER TABLE ONLY "public"."videodetail" ADD CONSTRAINT "videodetail_tagid_fkey" FOREIGN KEY (tagid) REFERENCES tag(tagid) NOT DEFERRABLE;
 ALTER TABLE ONLY "public"."videodetail" ADD CONSTRAINT "videodetail_videoid_fkey" FOREIGN KEY (videoid) REFERENCES video(videoid) NOT DEFERRABLE;
 
--- 2023-05-20 12:39:48.208206+00
+-- 2023-05-19 14:38:19.19584+00
