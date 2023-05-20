@@ -8,6 +8,7 @@ ENV NODE_ENV production
 RUN apt-get update && apt-get install -y build-essential python3-dev && \
   rm -rf /var/lib/apt/lists/*
 
+
 RUN npm ci
 
 # Stage 2: Production stage

@@ -7,7 +7,6 @@ const { sign } = require('../models/middleware.models')
 exports.create = async (req, res) => {
   // ดึงข้อมูลจาก request
   const {
-    id,
     name,
     surname,
     email,
@@ -15,9 +14,9 @@ exports.create = async (req, res) => {
   } = req.body
   if (validate_req(req, res, [email, password])) return
   // คำสั่ง SQL
-  const sql = `INSERT INTO admin (adminId, adminname, adminsurname, adminemail, adminpassword)
-  VALUES ($1, $2, $3, $4, $5);`;
-const values = [id, name, surname, email, hashPassword(password)];
+  const sql = `INSERT INTO admin ( adminname, adminsurname, adminemail, adminpassword)
+  VALUES ($1, $2, $3, $4);`;
+const values = [name, surname, email, hashPassword(password)];
 
 await database.create(sql, values, async (err, data) => {
   if (err) {
@@ -25,7 +24,6 @@ await database.create(sql, values, async (err, data) => {
       message: err.message || 'Some error occurred.',
     });
   } else {
-    // data.token = await sign({ id: data.id }, '3d');  
     res.send("create success")
   }
 });
