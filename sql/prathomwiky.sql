@@ -4,7 +4,7 @@
 
 DROP TABLE IF EXISTS "admin";
 DROP SEQUENCE IF EXISTS admin_adminid_seq;
-CREATE SEQUENCE admin_adminid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 3 CACHE 1;
+CREATE SEQUENCE admin_adminid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1;
 
 CREATE TABLE "public"."admin" (
     "adminid" integer DEFAULT nextval('admin_adminid_seq') NOT NULL,
@@ -19,7 +19,7 @@ TRUNCATE "admin";
 
 DROP TABLE IF EXISTS "image";
 DROP SEQUENCE IF EXISTS image_imageid_seq;
-CREATE SEQUENCE image_imageid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 5 CACHE 1;
+CREATE SEQUENCE image_imageid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1;
 
 CREATE TABLE "public"."image" (
     "imageid" integer DEFAULT nextval('image_imageid_seq') NOT NULL,
@@ -61,11 +61,8 @@ INSERT INTO "typedetail" ("typeid", "typedesc") VALUES
 (2001,	'สื่อนวัตกรรมที่น่าสนใจในพื้นที่');
 
 DROP TABLE IF EXISTS "video";
-DROP SEQUENCE IF EXISTS video_videoid_seq;
-CREATE SEQUENCE video_videoid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 7 CACHE 1;
-
 CREATE TABLE "public"."video" (
-    "videoid" uuid DEFAULT uuid_generate_v4() NOT NULL,
+    "videoid" text NOT NULL,
     "videoname" character varying(250),
     "videolink" text,
     "videodesc" text,
@@ -95,6 +92,5 @@ ALTER TABLE ONLY "public"."video" ADD CONSTRAINT "video_adminid_fkey" FOREIGN KE
 ALTER TABLE ONLY "public"."video" ADD CONSTRAINT "video_typeid_fkey" FOREIGN KEY (typeid) REFERENCES typedetail(typeid) NOT DEFERRABLE;
 
 ALTER TABLE ONLY "public"."videodetail" ADD CONSTRAINT "videodetail_tagid_fkey" FOREIGN KEY (tagid) REFERENCES tag(tagid) NOT DEFERRABLE;
-ALTER TABLE ONLY "public"."videodetail" ADD CONSTRAINT "videodetail_videoid_fkey" FOREIGN KEY (videoid) REFERENCES video(videoid) NOT DEFERRABLE;
 
--- 2023-05-20 12:39:48.208206+00
+-- 2023-05-20 13:08:01.539899+00
