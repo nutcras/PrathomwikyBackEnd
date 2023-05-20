@@ -7,12 +7,14 @@ module.exports = (app) => {
     findAll,
     update,
     deleteOne,
+    findByType,
     findById,
   } = require('../controllers/video.controller.js')
 
   router.post('/',  create)
 
   router.get('/getAll', findAll)
+  router.get('/getByType/:id', findByType)
   router.get('/get/:id',  findById)
  
   router.put('/:id',update)

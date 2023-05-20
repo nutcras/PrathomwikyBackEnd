@@ -7,13 +7,14 @@ exports.create = async (req, res) => {
   const {
     imageName,
     imagelink,
-    tagId
+    imageDesc,
+    adminId
   } = req.body
-  if (validate_req(req, res, [imageName, imagelink, tagId])) return
+  if (validate_req(req, res, [imageName, imagelink])) return
   // คำสั่ง SQL
-  const sql = `INSERT INTO image ( imagename, imagelink,  tagId)
+  const sql = `INSERT INTO image ( imagename, imagelink, imagedesc, adminid)
   VALUES ($1, $2, $3, $4);`;
-const values = [imagename, imagelink,  tagId];
+const values = [imageName, imagelink, imageDesc, adminId];
 
 await database.create(sql, values, async (err, data) => {
   if (err) {
@@ -66,15 +67,15 @@ exports.findById = async (req, res) => {
 
 exports.update = async (req, res) => {
   // ดึงข้อมูลจาก request
-  const {imageName, imageLink,  tagId} = req.body
+  const {imageName, imageLink, imageDesc, adminId} = req.body
   // ดึงข้อมูลจาก params
   const { id } = req.params
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id])) return
   // // คำสั่ง SQL
-  const sql = 'UPDATE image SET imagename = $1, imagelink = $2, imagedesc = $3, adminid = $4 WHERE imageId = $5';
+  const sql = 'UPDATE image SET imagename = $1, imagelink = $2, imagedesc = $3, adminid = $4 WHERE imageid = $5';
   // // ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
-  const data = [imageName, imageLink,  tagId, id]
+  const data = [imageName, imageLink, imageDesc, adminId,  id]
   // // แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.update(sql, data, (err) => {
     if (err)

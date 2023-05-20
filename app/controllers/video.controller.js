@@ -1,6 +1,6 @@
 const validate_req = require('../models/validate_req.models')
 const database = require('../models/query_code')
-
+const {v4: uuidv4} = require('uuid');
 
 exports.create = async (req, res) => {
   // ดึงข้อมูลจาก request
@@ -9,13 +9,15 @@ exports.create = async (req, res) => {
     videolink,
     videodesc,
     typeId,
-    adminId
+    adminId,
+    listDetail
   } = req.body
-  if (validate_req(req, res, [videoname, videolink, typeId,  adminId])) return
+  if (validate_req(req, res, [videoname, videolink, typeId, listDetail,  adminId])) return
+  const videoId = uuidv4();
   // คำสั่ง SQL
-  const sql = `INSERT INTO video ( videoname, videolink, videodesc, adminId)
-  VALUES ($1, $2, $3, $4);`;
-const values = [videoname, videolink, videodesc, adminId];
+  const sql = `INSERT INTO video (videoId, videoname, videolink, videodesc, typeId, adminId)
+  VALUES ($1, $2, $3, $4, $5, $6);`;
+const values = [videoId, videoname, videolink, videodesc, typeId, adminId];
 
 await database.create(sql, values, async (err, data) => {
   if (err) {
@@ -25,12 +27,31 @@ await database.create(sql, values, async (err, data) => {
   } else {
     // data.token = await sign({ id: data.id }, '3d');  
     res.send("create success")
+    console.log(data);
   }
 });
 
 }
 
 exports.findAll = async (req, res) => {
+  // คำสั่ง SQL
+  const sql = `SELECT v.*, vd.* FROM video v
+  LEFT JOIN videoDetail vd
+  ON vd.videoId = v.videoId
+  ORDER BY
+  videoId ASC;`
+  // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
+  await database.get(sql, (err, data) => {
+    if (err)
+      res.status(err.status).send({
+        message: err.message || 'Some error occurred.',
+      })
+    else if (data) {
+      res.status(200).json(data.rows)
+    } else res.status(204).end()
+  })
+}
+exports.findByType = async (req, res) => {
 
   const {typeId} = req.params
   // คำสั่ง SQL
