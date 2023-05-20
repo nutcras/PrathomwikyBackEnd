@@ -4,11 +4,11 @@ const database = require('../models/query_code')
 
 exports.create = async (req, res) => {
   // ดึงข้อมูลจาก request
-  const {tagName, tagDetil} = req.body
-  if (validate_req(req, res, [tagName, tagDetil])) return
+  const {tagName, tagDetail} = req.body
+  if (validate_req(req, res, [tagName, tagDetail])) return
   // คำสั่ง SQL
-  const sql = `INSERT INTO tag ( tagname,  tagdetail) VALUES ($1, $2);`;
-  const values = [tagName, tagLink];
+  const sql = `INSERT INTO tag (tagname,  tagdetail) VALUES ($1, $2);`;
+  const values = [tagName, tagDetail];
 
   await database.create(sql, values, async (err, data) => {
   if (err) {

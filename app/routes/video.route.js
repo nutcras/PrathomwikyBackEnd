@@ -14,7 +14,7 @@ module.exports = (app) => {
   router.post('/',  create)
 
   router.get('/getAll', findAll)
-  router.get('/getByType/:id', findByType)
+  router.get('/getByType/:typeId', findByType)
   router.get('/get/:id',  findById)
  
   router.put('/:id',update)
