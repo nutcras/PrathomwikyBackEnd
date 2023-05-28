@@ -79,7 +79,7 @@ CREATE SEQUENCE videodetail_vdid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 
 
 CREATE TABLE "public"."videodetail" (
     "vdid" integer DEFAULT nextval('videodetail_vdid_seq') NOT NULL,
-    "videoid" integer,
+    "videoid" text,
     "tagid" integer,
     CONSTRAINT "videodetail_pkey" PRIMARY KEY ("vdid")
 ) WITH (oids = false);
