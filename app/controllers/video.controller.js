@@ -113,7 +113,7 @@ exports.findByType = async (req, res) => {
   const { videoname } = req.body;
   // คำสั่ง SQL
   const sql = `
-    SELECT v.videoname, v.videodesc, v.videolink, t.tagname
+    SELECT v.videoid, v.videoname, v.videodesc, v.videolink, t.tagname, v.typeId, t.tagid
     FROM video v
     LEFT JOIN videodetail vd ON vd.videoId = v.videoId
     LEFT JOIN tag t ON t.tagid = vd.tagid
@@ -132,17 +132,25 @@ exports.findByType = async (req, res) => {
       // Grouping the video details by videoid
       const videoDetailsMap = new Map();
       for (const row of data.rows) {
-        const { videoname, videodesc, videolink, tagname } = row;
+        const {
+          videoid,
+          videoname,
+          videodesc,
+          videolink,
+          tagname,
+          tagid,
+          typeid,
+        } = row;
 
         if (!videoDetailsMap.has(videoname)) {
           videoDetailsMap.set(videoname, []);
         }
 
-        const videoDetail = { tagname };
+        const videoDetail = { tagname, tagid };
         videoDetailsMap.get(videoname).push(videoDetail);
 
         if (!videos.some((video) => video.videoname === videoname)) {
-          const video = { videoname, videodesc, videolink };
+          const video = { videoid, videoname, videodesc, videolink, typeid };
           videos.push(video);
         }
       }
