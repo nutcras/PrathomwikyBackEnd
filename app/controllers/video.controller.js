@@ -110,16 +110,19 @@ exports.findAll = async (req, res) => {
 
 exports.findByType = async (req, res) => {
   const { typeId } = req.params;
-  const { videoname } = req.body;
+  const { videoname, tagid } = req.body;
   // คำสั่ง SQL
-  const sql = `
+  let sql = `
     SELECT v.videoid, v.videoname, v.videodesc, v.videolink, t.tagname, v.typeId, t.tagid
     FROM video v
     LEFT JOIN videodetail vd ON vd.videoId = v.videoId
     LEFT JOIN tag t ON t.tagid = vd.tagid
     WHERE v.typeId = ${typeId} AND v.videoname like '%${videoname}%'
-    ORDER BY v.videoId ASC;`;
+    `;
 
+  if (tagid !== undefined) {
+    sql += ` AND t.tagid = ${tagid}`;
+  }
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.get(sql, (err, data) => {
     if (err) {

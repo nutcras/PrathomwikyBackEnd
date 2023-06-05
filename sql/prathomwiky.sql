@@ -1,10 +1,8 @@
 -- Adminer 4.8.1 PostgreSQL 15.3 dump
 
-\connect "prathomwiky";
-
 DROP TABLE IF EXISTS "admin";
 DROP SEQUENCE IF EXISTS admin_adminid_seq;
-CREATE SEQUENCE admin_adminid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1;
+CREATE SEQUENCE admin_adminid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."admin" (
     "adminid" integer DEFAULT nextval('admin_adminid_seq') NOT NULL,
@@ -15,11 +13,12 @@ CREATE TABLE "public"."admin" (
     CONSTRAINT "admin_pkey" PRIMARY KEY ("adminid")
 ) WITH (oids = false);
 
-TRUNCATE "admin";
+INSERT INTO "admin" ("adminid", "adminname", "adminsurname", "adminemail", "adminpassword") VALUES
+(1,	'admin',	'admin',	'admin@itsupport.com',	'$2b$10$ksNzQS4E5MhKbGm8zh5QoecgQ97IM0aPw8VwIviqedRdOmvItmPvW');
 
 DROP TABLE IF EXISTS "image";
 DROP SEQUENCE IF EXISTS image_imageid_seq;
-CREATE SEQUENCE image_imageid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1;
+CREATE SEQUENCE image_imageid_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
 CREATE TABLE "public"."image" (
     "imageid" integer DEFAULT nextval('image_imageid_seq') NOT NULL,
@@ -30,7 +29,8 @@ CREATE TABLE "public"."image" (
     CONSTRAINT "image_pkey" PRIMARY KEY ("imageid")
 ) WITH (oids = false);
 
-TRUNCATE "image";
+INSERT INTO "image" ("imageid", "imagelink", "imagename", "imagedesc", "adminid") VALUES
+(1,	'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg',	'poster',	'first poster',	1);
 
 DROP TABLE IF EXISTS "tag";
 DROP SEQUENCE IF EXISTS tag_tagid_seq;
@@ -43,7 +43,8 @@ CREATE TABLE "public"."tag" (
     CONSTRAINT "tag_pkey" PRIMARY KEY ("tagid")
 ) WITH (oids = false);
 
-TRUNCATE "tag";
+INSERT INTO "tag" ("tagid", "tagname", "tagdetail") VALUES
+(1,	'ท่องเที่ยว',	'เกี่ยวกับการท่องเที่ยวต่างๆ');
 
 DROP TABLE IF EXISTS "typedetail";
 DROP SEQUENCE IF EXISTS typedetail_typeid_seq;
@@ -55,7 +56,6 @@ CREATE TABLE "public"."typedetail" (
     CONSTRAINT "typedetail_pkey" PRIMARY KEY ("typeid")
 ) WITH (oids = false);
 
-TRUNCATE "typedetail";
 INSERT INTO "typedetail" ("typeid", "typedesc") VALUES
 (1001,	'สื่อนวัตกรรมของชาวขุนยวน'),
 (2001,	'สื่อนวัตกรรมที่น่าสนใจในพื้นที่');
@@ -71,7 +71,6 @@ CREATE TABLE "public"."video" (
     CONSTRAINT "video_pkey" PRIMARY KEY ("videoid")
 ) WITH (oids = false);
 
-TRUNCATE "video";
 
 DROP TABLE IF EXISTS "videodetail";
 DROP SEQUENCE IF EXISTS videodetail_vdid_seq;
@@ -84,7 +83,6 @@ CREATE TABLE "public"."videodetail" (
     CONSTRAINT "videodetail_pkey" PRIMARY KEY ("vdid")
 ) WITH (oids = false);
 
-TRUNCATE "videodetail";
 
 ALTER TABLE ONLY "public"."image" ADD CONSTRAINT "image_adminId_fkey" FOREIGN KEY (adminid) REFERENCES admin(adminid) NOT DEFERRABLE;
 
@@ -93,4 +91,4 @@ ALTER TABLE ONLY "public"."video" ADD CONSTRAINT "video_typeid_fkey" FOREIGN KEY
 
 ALTER TABLE ONLY "public"."videodetail" ADD CONSTRAINT "videodetail_tagid_fkey" FOREIGN KEY (tagid) REFERENCES tag(tagid) NOT DEFERRABLE;
 
--- 2023-05-20 13:08:01.539899+00
+-- 2023-06-05 05:56:27.212196+00
