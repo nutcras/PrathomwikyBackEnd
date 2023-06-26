@@ -3,15 +3,14 @@ const database = require("../models/query_code");
 
 exports.create = async (req, res) => {
   // ดึงข้อมูลจาก request
-  const { imageName, imagelink, imageDesc, adminId } = req.body;
+  const { pdfName, adminId } = req.body;
 
   const file = req.file;
-  if (validate_req(req, res, [imageName, file])) return;
 
+  if (validate_req(req, res, [file, adminId])) return;
   // คำสั่ง SQL
-  const sql = `INSERT INTO image (imagename, imagelink, path, imagedesc, adminid)
-  VALUES ($1, $2, $3, $4, $5);`;
-  const values = [imageName, imagelink, file.buffer, imageDesc, adminId];
+  const sql = `INSERT INTO pdf ( path, pdfname, adminid) VALUES ($1, $2, $3);`;
+  const values = [file.buffer, pdfName, adminId];
 
   await database.create(sql, values, async (err, data) => {
     if (err) {
@@ -27,8 +26,7 @@ exports.create = async (req, res) => {
 
 exports.findAll = async (req, res) => {
   // คำสั่ง SQL
-  const sql = `SELECT * FROM image ORDER BY
-  imageId ASC;`;
+  const sql = `SELECT * FROM pdf ORDER BY id ASC;`;
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.get(sql, (err, data) => {
     if (err)
@@ -44,7 +42,7 @@ exports.findAll = async (req, res) => {
 exports.findById = async (req, res) => {
   // คำสั่ง SQL
   const { id } = req.params;
-  const sql = `SELECT * FROM image WHERE imageId = ${id}`;
+  const sql = `SELECT * FROM pdf WHERE id = ${id}`;
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.get(sql, (err, data) => {
     if (err)
@@ -63,7 +61,7 @@ exports.findById = async (req, res) => {
 
 exports.update = async (req, res) => {
   // ดึงข้อมูลจาก request
-  const { imageName, imageLink, imageDesc, adminId } = req.body;
+  const { pdfName, adminId } = req.body;
   // ดึงข้อมูลจาก params
   const { id } = req.params;
 
@@ -72,9 +70,9 @@ exports.update = async (req, res) => {
   if (validate_req(req, res, [id])) return;
   // // คำสั่ง SQL
   const sql =
-    "UPDATE image SET  imagename = $1, imagelink = $2, imagedesc = $3, adminid = $4, path = $5 WHERE imageid = $6";
+    "UPDATE pdf SET pdfname = $1, path = $2, adminid = $3 WHERE id = $4";
   // // ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
-  const data = [imageName, imageLink, imageDesc, adminId, file.buffer, id];
+  const data = [pdfName, file.buffer, adminId, id];
   // // แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.update(sql, data, (err) => {
     if (err)
@@ -94,7 +92,7 @@ exports.deleteOne = async (req, res) => {
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id])) return;
   // คำสั่ง SQL
-  const sql = `DELETE FROM image WHERE imageId = $1`;
+  const sql = `DELETE FROM pdf WHERE id = $1`;
   // ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
   const data = [id];
   // ลบข้อมูล โดยส่งคำสั่ง SQL และ id เข้าไป

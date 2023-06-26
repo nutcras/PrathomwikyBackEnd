@@ -9,17 +9,17 @@ module.exports = (app) => {
     update,
     deleteOne,
     findById,
-  } = require("../controllers/image.controller.js");
+  } = require("../controllers/pdf.controller.js");
 
-  router.post("/", upload.single("image"), create);
+  router.post("/", upload.single("file"), create);
 
   router.get("/getAll", findAll);
   router.get("/get/:id", findById);
 
-  router.put("/:id", upload.single("image"), update);
+  router.put("/:id", upload.single("file"), update);
 
   router.delete("/:id", deleteOne);
 
   // เซ็ต PREFIX
-  app.use(process.env.PREFIX + "/image", router);
+  app.use(process.env.PREFIX + "/pdf", router);
 };
