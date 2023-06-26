@@ -62,12 +62,11 @@ exports.findById = async (req, res) => {
 exports.update = async (req, res) => {
   // ดึงข้อมูลจาก request
   const { pdfName, adminId } = req.body;
+  const file = req.file;
   // ดึงข้อมูลจาก params
   const { id } = req.params;
-
-  const file = req.file;
   // ตรวจสอบความถูกต้อง request
-  if (validate_req(req, res, [id])) return;
+  if (validate_req(req, res, [id, file])) return;
   // // คำสั่ง SQL
   const sql =
     "UPDATE pdf SET pdfname = $1, path = $2, adminid = $3 WHERE id = $4";

@@ -8,7 +8,6 @@ exports.create = async (req, res) => {
   const file = req.file;
   if (validate_req(req, res, [imageName, file])) return;
 
-  // คำสั่ง SQL
   const sql = `INSERT INTO image (imagename, imagelink, path, imagedesc, adminid)
   VALUES ($1, $2, $3, $4, $5);`;
   const values = [imageName, imagelink, file.buffer, imageDesc, adminId];
@@ -27,8 +26,8 @@ exports.create = async (req, res) => {
 
 exports.findAll = async (req, res) => {
   // คำสั่ง SQL
-  const sql = `SELECT * FROM image ORDER BY
-  imageId ASC;`;
+  const sql = `SELECT imageid, imagename, imagelink, encode(path, 'base64') as path_base64, imagedesc, adminid
+  FROM image ORDER BY imageId ASC;`;
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.get(sql, (err, data) => {
     if (err)
@@ -44,7 +43,8 @@ exports.findAll = async (req, res) => {
 exports.findById = async (req, res) => {
   // คำสั่ง SQL
   const { id } = req.params;
-  const sql = `SELECT * FROM image WHERE imageId = ${id}`;
+  const sql = `SELECT imageid, imagename, imagelink, encode(path, 'base64') as path_base64, imagedesc, adminid
+  FROM image WHERE imageId = ${id}`;
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.get(sql, (err, data) => {
     if (err)
