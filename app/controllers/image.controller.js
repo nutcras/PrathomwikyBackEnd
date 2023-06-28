@@ -9,7 +9,7 @@ exports.create = async (req, res) => {
   if (validate_req(req, res, [imageName, file])) return;
 
   const createDate = new Date(); // Current date and time
-const formattedCreateDate = createDate.toISOString().split('T')[0];
+  const formattedCreateDate = createDate.toISOString();
 
   const sql = `INSERT INTO image (imagename, imagelink, path, imagedesc, adminid, createdate)
   VALUES ($1, $2, $3, $4, $5, $6);`;
@@ -74,7 +74,7 @@ exports.update = async (req, res) => {
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id])) return;
   const createDate = new Date(); // Current date and time
-  const formattedCreateDate = createDate.toISOString().split('T')[0];
+  const formattedCreateDate = createDate.toISOString();
   // // คำสั่ง SQL
   const sql =
     "UPDATE image SET  imagename = $1, imagelink = $2, imagedesc = $3, adminid = $4, path = $5, createdate = $6 WHERE imageid = $7";

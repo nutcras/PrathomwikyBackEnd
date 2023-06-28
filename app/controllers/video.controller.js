@@ -12,7 +12,7 @@ exports.create = async (req, res) => {
     return;
   const videoId = uuidv4();
   const createDate = new Date(); // Current date and time
-  const formattedCreateDate = createDate.toISOString().split('T')[0];
+  const formattedCreateDate = createDate.toISOString();
   // คำสั่ง SQL
   const sql = `INSERT INTO video (videoId, videoname, videolink, videodesc, typeId, adminId, createdate)
   VALUES ($1, $2, $3, $4, $5, $6, $7);`;
@@ -233,7 +233,7 @@ exports.update = async (req, res) => {
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id])) return;
   const createDate = new Date(); // Current date and time
-  const formattedCreateDate = createDate.toISOString().split('T')[0];
+  const formattedCreateDate = createDate.toISOString();
   // คำสั่ง SQL
   const sql =
     "UPDATE video SET videoname = $1, videolink = $2, videodesc = $3, adminid = $4, typeId = $5, createdate = $6 WHERE videoId = $7";

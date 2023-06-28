@@ -1,5 +1,6 @@
 const validate_req = require("../models/validate_req.models");
 const database = require("../models/query_code");
+const options = { timeZone: 'Asia/Bangkok' };
 
 exports.create = async (req, res) => {
   // ดึงข้อมูลจาก request
@@ -8,7 +9,8 @@ exports.create = async (req, res) => {
   const file = req.file;
 
   const createDate = new Date(); // Current date and time
-  const formattedCreateDate = createDate.toISOString().split('T')[0];
+  const formattedCreateDate = createDate.toLocaleString('en-US', options);
+
   if (validate_req(req, res, [file, adminId])) return;
   // คำสั่ง SQL
   const sql = `INSERT INTO pdf ( path, pdfname, adminid, createdate) VALUES ($1, $2, $3, $4);`;
@@ -36,7 +38,13 @@ exports.findAll = async (req, res) => {
         message: err.message || "Some error occurred.",
       });
     else if (data) {
-      res.status(200).json(data.rows);
+      const convertedData = data.rows.map((row) => {
+        const createDate = new Date(row.createdate);
+        const formattedCreateDate = createDate.toLocaleString('en-US', options);
+        return { ...row, createdate: formattedCreateDate };
+      });
+
+      res.status(200).json(convertedData);
     } else res.status(204).end();
   });
 };
@@ -55,7 +63,13 @@ exports.findById = async (req, res) => {
       if (data.rows.length == 0) {
         res.send("NOTFOUND");
       } else {
-        res.status(200).json(data.rows);
+        const convertedData = data.rows.map((row) => {
+          const createDate = new Date(row.createdate);
+          const formattedCreateDate = createDate.toLocaleString('en-US', options);
+          return { ...row, createdate: formattedCreateDate };
+        });
+  
+        res.status(200).json(convertedData);
       }
     } else res.status(204).end();
   });
@@ -70,10 +84,10 @@ exports.update = async (req, res) => {
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id, file])) return;
   const createDate = new Date(); // Current date and time
-  const formattedCreateDate = createDate.toISOString().split('T')[0];
+  const formattedCreateDate = createDate.toLocaleString('en-US', options);
   // // คำสั่ง SQL
   const sql =
-    "UPDATE pdf SET pdfname = $1, path = $2, adminid = $3, createate =$4 WHERE id = $5";
+    "UPDATE pdf SET pdfname = $1, path = $2, adminid = $3, createdate =$4 WHERE id = $5";
   // // ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
   const data = [pdfName, file.buffer, adminId, formattedCreateDate, id];
   // // แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
