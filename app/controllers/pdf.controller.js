@@ -7,10 +7,12 @@ exports.create = async (req, res) => {
 
   const file = req.file;
 
+  const createDate = new Date(); // Current date and time
+  const formattedCreateDate = createDate.toISOString().split('T')[0];
   if (validate_req(req, res, [file, adminId])) return;
   // คำสั่ง SQL
-  const sql = `INSERT INTO pdf ( path, pdfname, adminid) VALUES ($1, $2, $3);`;
-  const values = [file.buffer, pdfName, adminId];
+  const sql = `INSERT INTO pdf ( path, pdfname, adminid, createdate) VALUES ($1, $2, $3, $4);`;
+  const values = [file.buffer, pdfName, adminId, formattedCreateDate];
 
   await database.create(sql, values, async (err, data) => {
     if (err) {
@@ -26,7 +28,7 @@ exports.create = async (req, res) => {
 
 exports.findAll = async (req, res) => {
   // คำสั่ง SQL
-  const sql = `SELECT * FROM pdf ORDER BY id ASC;`;
+  const sql = `SELECT * FROM pdf ORDER BY createdate ASC;`;
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.get(sql, (err, data) => {
     if (err)
@@ -67,11 +69,13 @@ exports.update = async (req, res) => {
   const { id } = req.params;
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id, file])) return;
+  const createDate = new Date(); // Current date and time
+  const formattedCreateDate = createDate.toISOString().split('T')[0];
   // // คำสั่ง SQL
   const sql =
-    "UPDATE pdf SET pdfname = $1, path = $2, adminid = $3 WHERE id = $4";
+    "UPDATE pdf SET pdfname = $1, path = $2, adminid = $3, createate =$4 WHERE id = $5";
   // // ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
-  const data = [pdfName, file.buffer, adminId, id];
+  const data = [pdfName, file.buffer, adminId, formattedCreateDate, id];
   // // แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.update(sql, data, (err) => {
     if (err)

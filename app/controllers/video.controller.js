@@ -11,10 +11,12 @@ exports.create = async (req, res) => {
   )
     return;
   const videoId = uuidv4();
+  const createDate = new Date(); // Current date and time
+  const formattedCreateDate = createDate.toISOString().split('T')[0];
   // คำสั่ง SQL
-  const sql = `INSERT INTO video (videoId, videoname, videolink, videodesc, typeId, adminId)
-  VALUES ($1, $2, $3, $4, $5, $6);`;
-  const values = [videoId, videoname, videolink, videodesc, typeId, adminId];
+  const sql = `INSERT INTO video (videoId, videoname, videolink, videodesc, typeId, adminId, createdate)
+  VALUES ($1, $2, $3, $4, $5, $6, $7);`;
+  const values = [videoId, videoname, videolink, videodesc, typeId, adminId, formattedCreateDate];
 
   await database.create(sql, values, async (err, data) => {
     if (err) {
@@ -47,7 +49,7 @@ exports.findAll = async (req, res) => {
     SELECT v.*, vd.vdid, vd.tagid
     FROM video v
     LEFT JOIN videodetail vd ON vd.videoId = v.videoId
-    ORDER BY v.videoId ASC;
+    ORDER BY createdate ASC;
   `;
 
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
@@ -71,6 +73,7 @@ exports.findAll = async (req, res) => {
           adminid,
           vdid,
           tagid,
+          createdate
         } = row;
 
         if (!videoDetailsMap.has(videoid)) {
@@ -88,6 +91,7 @@ exports.findAll = async (req, res) => {
             videodesc,
             typeid,
             adminid,
+            createdate
           };
           videos.push(video);
         }
@@ -113,7 +117,7 @@ exports.findByType = async (req, res) => {
   const { videoname, tagid } = req.body;
   // คำสั่ง SQL
   let sql = `
-    SELECT v.videoid, v.videoname, v.videodesc, v.videolink, t.tagname, v.typeId, t.tagid
+    SELECT v.videoid, v.videoname, v.videodesc, v.videolink, t.tagname, v.typeId, t.tagid, v.createdate
     FROM video v
     LEFT JOIN videodetail vd ON vd.videoId = v.videoId
     LEFT JOIN tag t ON t.tagid = vd.tagid
@@ -143,26 +147,27 @@ exports.findByType = async (req, res) => {
           tagname,
           tagid,
           typeid,
+          createdate
         } = row;
 
-        if (!videoDetailsMap.has(videoname)) {
-          videoDetailsMap.set(videoname, []);
+        if (!videoDetailsMap.has(videoid)) {
+          videoDetailsMap.set(videoid, []);
         }
 
         const videoDetail = { tagname, tagid };
-        videoDetailsMap.get(videoname).push(videoDetail);
+        videoDetailsMap.get(videoid).push(videoDetail);
 
-        if (!videos.some((video) => video.videoname === videoname)) {
-          const video = { videoid, videoname, videodesc, videolink, typeid };
+        if (!videos.some((video) => video.videoid === videoid)) {
+          const video = { videoid, videoname, videodesc, videolink, typeid, createdate };
           videos.push(video);
         }
       }
 
       // Adding video details to respective videos
       for (const video of videos) {
-        const videoname = video.videoname;
-        if (videoDetailsMap.has(videoname)) {
-          video.videoDetail = videoDetailsMap.get(videoname);
+        const videoid = video.videoid;
+        if (videoDetailsMap.has(videoid)) {
+          video.videoDetail = videoDetailsMap.get(videoid);
         }
       }
       res.status(200).json(videos);
@@ -190,7 +195,7 @@ exports.findById = async (req, res) => {
       if (data.rows.length === 0) {
         res.send("NOTFOUND");
       } else {
-        const { videoid, videoname, videolink, videodesc, typeid, adminid } =
+        const { videoid, videoname, videolink, videodesc, typeid, adminid, createdate } =
           data.rows[0];
 
         const video = {
@@ -201,6 +206,7 @@ exports.findById = async (req, res) => {
           typeid,
           adminid,
           videoDetail: [],
+          createdate
         };
 
         for (const row of data.rows) {
@@ -226,11 +232,13 @@ exports.update = async (req, res) => {
   const { id } = req.params;
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id])) return;
+  const createDate = new Date(); // Current date and time
+  const formattedCreateDate = createDate.toISOString().split('T')[0];
   // คำสั่ง SQL
   const sql =
-    "UPDATE video SET videoname = $1, videolink = $2, videodesc = $3, adminid = $4, typeId = $5 WHERE videoId = $6";
+    "UPDATE video SET videoname = $1, videolink = $2, videodesc = $3, adminid = $4, typeId = $5, createdate = $6 WHERE videoId = $7";
   // ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
-  const data = [videoname, videolink, videodesc, adminId, typeId, id];
+  const data = [videoname, videolink, videodesc, adminId, typeId, formattedCreateDate, id];
   // แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.update(sql, data, async (err) => {
     if (err) {
