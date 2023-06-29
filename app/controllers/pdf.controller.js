@@ -30,7 +30,7 @@ exports.create = async (req, res) => {
 
 exports.findAll = async (req, res) => {
   // คำสั่ง SQL
-  const sql = `SELECT * FROM pdf ORDER BY createdate ASC;`;
+  const sql = `SELECT id, pdfname, adminid, createdate FROM pdf ORDER BY createdate ASC;`;
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.get(sql, (err, data) => {
     if (err)
@@ -52,7 +52,7 @@ exports.findAll = async (req, res) => {
 exports.findById = async (req, res) => {
   // คำสั่ง SQL
   const { id } = req.params;
-  const sql = `SELECT * FROM pdf WHERE id = ${id}`;
+  const sql = `SELECT path, pdfname FROM pdf WHERE id = ${id}`;
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.get(sql, (err, data) => {
     if (err)
