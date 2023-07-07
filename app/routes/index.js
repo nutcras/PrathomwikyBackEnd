@@ -6,4 +6,5 @@ module.exports = (app) => {
   require("./image.route")(app);
   require("./tag.route")(app);
   require("./pdf.route")(app);
+  require("./chat.route")(app);
 };

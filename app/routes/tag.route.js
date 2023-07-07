@@ -1,6 +1,7 @@
 module.exports = (app) => {
   const router = require('express').Router()
-  const { verify } = require('../models/middleware.models.js')
+  const multer = require("multer");
+  const upload = multer();
 
   const {
     create,
@@ -10,12 +11,12 @@ module.exports = (app) => {
     findById,
   } = require('../controllers/tag.controller.js')
 
-  router.post('/',  create)
+  router.post('/', upload.single("file"),  create)
 
   router.get('/getAll', findAll)
   router.get('/get/:id',  findById)
  
-  router.put('/:id',update)
+  router.put('/:id', upload.single("file"), update)
 
   router.delete('/:id',  deleteOne)
 

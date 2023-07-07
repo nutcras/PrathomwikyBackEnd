@@ -4,10 +4,11 @@ const database = require("../models/query_code");
 exports.create = async (req, res) => {
   // ดึงข้อมูลจาก request
   const { tagName, tagDetail } = req.body;
+  const file = req.file;
   if (validate_req(req, res, [tagName])) return;
   // คำสั่ง SQL
-  const sql = `INSERT INTO tag (tagname,  tagdetail) VALUES ($1, $2);`;
-  const values = [tagName, tagDetail];
+  const sql = `INSERT INTO tag (tagname,  tagdetail, tagimg) VALUES ($1, $2, $3);`;
+  const values = [tagName, tagDetail, file.buffer];
 
   await database.create(sql, values, async (err, data) => {
     if (err) {
@@ -15,7 +16,6 @@ exports.create = async (req, res) => {
         message: err.message || "Some error occurred.",
       });
     } else {
-      // data.token = await sign({ id: data.id }, '3d');
       res.send("create success");
     }
   });
@@ -23,7 +23,7 @@ exports.create = async (req, res) => {
 
 exports.findAll = async (req, res) => {
   // คำสั่ง SQL
-  const sql = `SELECT tagId as id, tagname as name, tagdetail detail FROM tag ORDER BY
+  const sql = `SELECT tagId as id, tagname as name, tagdetail detail, encode(tagimg, 'base64') as path_base64 FROM tag ORDER BY
   tagId ASC;`;
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.get(sql, (err, data) => {
@@ -40,7 +40,7 @@ exports.findAll = async (req, res) => {
 exports.findById = async (req, res) => {
   // คำสั่ง SQL
   const { id } = req.params;
-  const sql = `SELECT * FROM tag WHERE tagId = ${id}`;
+  const sql = `SELECT tagId as id, tagname as name, tagdetail detail, encode(tagimg, 'base64') as path_base64  FROM tag WHERE tagId = ${id}`;
   // ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.get(sql, (err, data) => {
     if (err)
@@ -61,14 +61,12 @@ exports.update = async (req, res) => {
   // ดึงข้อมูลจาก request
   const { tagName, tagDetail } = req.body;
   // ดึงข้อมูลจาก params
+  const file = req.file;
   const { id } = req.params;
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id])) return;
-  // // คำสั่ง SQL
-  const sql = "UPDATE tag SET tagname = $1, tagdetail = $2 WHERE tagId = $3";
-  // // ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
-  const data = [tagName, tagDetail, id];
-  // // แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
+  const sql = "UPDATE tag SET tagname = $1, tagdetail = $2, tagimg = $3 WHERE tagId = $4";
+  const data = [tagName, tagDetail, file.buffer, id];
   await database.update(sql, data, (err) => {
     if (err)
       res.status(err.status).send({
