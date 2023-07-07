@@ -1,5 +1,6 @@
 const validate_req = require("../models/validate_req.models");
 const database = require("../models/query_code");
+const { generateRandomKey } = require("../models/middleware.models");
 
 exports.create = async (req, res) => {
   // ดึงข้อมูลจาก request
@@ -11,9 +12,9 @@ exports.create = async (req, res) => {
   const createDate = new Date(); // Current date and time
   const formattedCreateDate = createDate.toISOString();
 
-  const sql = `INSERT INTO image (imagename, path, imagedesc, adminid, createdate)
-  VALUES ($1, $2, $3, $4, $5);`;
-  const values = [imageName, file.buffer, imageDesc, adminId, formattedCreateDate];
+  const sql = `INSERT INTO image (imageid, imagename, path, imagedesc, adminid, createdate)
+  VALUES ($1, $2, $3, $4, $5, $6);`;
+  const values = [generateRandomKey(), imageName, file.buffer, imageDesc, adminId, formattedCreateDate];
 
   await database.create(sql, values, async (err, data) => {
     if (err) {

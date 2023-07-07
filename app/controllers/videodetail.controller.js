@@ -10,7 +10,7 @@ exports.create = async (req, res) => {
   } = req.body
   if (validate_req(req, res, [videoId, tagId])) return
   // คำสั่ง SQL
-  const sql = `INSERT INTO videodetail ( videoId, tagId)
+  const sql = `INSERT INTO videodetail (videoId, tagId)
   VALUES ($1, $2);`;
 const values = [videoId, tagId];
 

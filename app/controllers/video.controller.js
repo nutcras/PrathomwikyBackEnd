@@ -1,6 +1,7 @@
 const validate_req = require("../models/validate_req.models");
 const database = require("../models/query_code");
 const { v4: uuidv4 } = require("uuid");
+const { generateRandomKey } = require("../models/middleware.models");
 
 exports.create = async (req, res) => {
   // ดึงข้อมูลจาก request
@@ -26,9 +27,9 @@ exports.create = async (req, res) => {
     } else {
       // data.token = await sign({ id: data.id }, '3d');
       listDetail.map(async (m) => {
-        const sql1 = `INSERT INTO videodetail (videoId, tagId)
-      VALUES ($1, $2);`;
-        const values1 = [videoId, m.tagId];
+        const sql1 = `INSERT INTO videodetail (vdId, videoId, tagId)
+      VALUES ($1, $2, $3);`;
+        const values1 = [generateRandomKey(), videoId, m.tagId];
 
         await database.create(sql1, values1, async (err, data) => {
           if (err) {
@@ -257,8 +258,8 @@ exports.update = async (req, res) => {
         } else {
           for (const m of listDetail) {
             const insertSql =
-              "INSERT INTO videodetail (videoId, tagId) VALUES ($1, $2)";
-            const insertData = [id, m.tagId];
+              "INSERT INTO videodetail (vdId, videoId, tagId) VALUES ($1, $2, $3)";
+            const insertData = [generateRandomKey(), id, m.tagId];
 
             await database.create(insertSql, insertData, (err) => {
               if (err) {

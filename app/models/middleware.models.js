@@ -33,6 +33,9 @@ exports.verify = async (req, res, next) => {
   }
 }
 
+exports.generateRandomKey =()=>{
+  return Math.floor(Math.random() * 1000000);
+}
 const getTokenFrom = (request) => {
   const authorization = request.get('Authorization')
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {

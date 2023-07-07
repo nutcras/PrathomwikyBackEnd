@@ -1,5 +1,6 @@
 const validate_req = require("../models/validate_req.models");
 const database = require("../models/query_code");
+const { generateRandomKey } = require("../models/middleware.models");
 
 exports.create = async (req, res) => {
   // ดึงข้อมูลจาก request
@@ -7,8 +8,8 @@ exports.create = async (req, res) => {
   const file = req.file;
   if (validate_req(req, res, [tagName])) return;
   // คำสั่ง SQL
-  const sql = `INSERT INTO tag (tagname,  tagdetail, tagimg) VALUES ($1, $2, $3);`;
-  const values = [tagName, tagDetail, file.buffer];
+  const sql = `INSERT INTO tag (tagid, tagname,  tagdetail, tagimg) VALUES ($1, $2, $3, $4);`;
+  const values = [generateRandomKey(), tagName, tagDetail, file.buffer];
 
   await database.create(sql, values, async (err, data) => {
     if (err) {

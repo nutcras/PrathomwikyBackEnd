@@ -1,5 +1,6 @@
 const validate_req = require("../models/validate_req.models");
 const database = require("../models/query_code");
+const { generateRandomKey } = require("../models/middleware.models");
 const options = { timeZone: 'Asia/Bangkok' };
 
 exports.create = async (req, res) => {
@@ -9,8 +10,8 @@ exports.create = async (req, res) => {
   const createDate = new Date(); // Current date and time
   const formattedCreateDate = createDate.toLocaleString('en-US', options);
   // คำสั่ง SQL
-  const sql = `INSERT INTO chat (name, numberphone,  msg, createdate) VALUES ($1, $2, $3, $4);`;
-  const values = [name, phone, msg, formattedCreateDate];
+  const sql = `INSERT INTO chat (id, name, numberphone,  msg, createdate) VALUES ($1, $2, $3, $4, $5);`;
+  const values = [generateRandomKey(), name, phone, msg, formattedCreateDate];
 
   await database.create(sql, values, async (err, data) => {
     if (err) {

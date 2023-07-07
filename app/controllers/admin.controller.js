@@ -1,7 +1,7 @@
 const validate_req = require('../models/validate_req.models')
 const database = require('../models/query_code')
 const { verifyingHash, hashPassword } = require('../models/hashing.models')
-const { sign } = require('../models/middleware.models')
+const { sign, generateRandomKey } = require('../models/middleware.models')
 
 
 exports.create = async (req, res) => {
@@ -14,9 +14,9 @@ exports.create = async (req, res) => {
   } = req.body
   if (validate_req(req, res, [email, password])) return
   // คำสั่ง SQL
-  const sql = `INSERT INTO admin ( adminname, adminsurname, adminemail, adminpassword)
-  VALUES ($1, $2, $3, $4);`;
-const values = [name, surname, email, hashPassword(password)];
+  const sql = `INSERT INTO admin (adminid, adminname, adminsurname, adminemail, adminpassword)
+  VALUES ($1, $2, $3, $4, $5);`;
+const values = [generateRandomKey(),name, surname, email, hashPassword(password)];
 
 await database.create(sql, values, async (err, data) => {
   if (err) {
@@ -73,11 +73,8 @@ exports.update = async (req, res) => {
   const { id } = req.params
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id])) return
-  // // คำสั่ง SQL
   const sql = 'UPDATE admin SET adminName = $1, adminSurname = $2, adminEmail = $3 WHERE adminId = $4';
-  // // ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
   const data = [name, surname, email, id]
-  // // แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await database.update(sql, data, (err) => {
     if (err)
       res.status(err.status).send({

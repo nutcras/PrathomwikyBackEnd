@@ -1,5 +1,6 @@
 const validate_req = require("../models/validate_req.models");
 const database = require("../models/query_code");
+const { generateRandomKey } = require("../models/middleware.models");
 const options = { timeZone: 'Asia/Bangkok' };
 
 exports.create = async (req, res) => {
@@ -13,8 +14,8 @@ exports.create = async (req, res) => {
 
   if (validate_req(req, res, [file, adminId])) return;
   // คำสั่ง SQL
-  const sql = `INSERT INTO pdf ( path, pdfname, adminid, createdate) VALUES ($1, $2, $3, $4);`;
-  const values = [file.buffer, pdfName, adminId, formattedCreateDate];
+  const sql = `INSERT INTO pdf (id path, pdfname, adminid, createdate) VALUES ($1, $2, $3, $4, $5);`;
+  const values = [generateRandomKey(), file.buffer, pdfName, adminId, formattedCreateDate];
 
   await database.create(sql, values, async (err, data) => {
     if (err) {
