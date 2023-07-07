@@ -21,7 +21,6 @@ exports.create = async (req, res) => {
         message: err.message || "Some error occurred.",
       });
     } else {
-      // data.token = await sign({ id: data.id }, '3d');
       res.send("create success");
     }
   });
@@ -69,21 +68,14 @@ exports.update = async (req, res) => {
   const { imageName,  imageDesc, adminId } = req.body;
   // ดึงข้อมูลจาก params
   const { id } = req.params;
-
   const file = req.file;
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id])) return;
   const createDate = new Date(); // Current date and time
   const formattedCreateDate = createDate.toISOString();
-  // // คำสั่ง SQL
   const sql =
     "UPDATE image SET  imagename = $1,  imagedesc = $2, adminid = $3, path = $4, createdate = $5 WHERE imageid = $6";
-
-  // // ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
   const data = [imageName, imageDesc, adminId, file.buffer, formattedCreateDate, id];
-  // // แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
-
-  console.log(sql, data);
   await database.update(sql, data, (err) => {
     if (err)
       res.status(err.status).send({

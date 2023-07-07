@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       POSTGRES_DB: prathomwiky
-      POSTGRES_USER: adminer
+      POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
     volumes:
       - ./data:/var/lib/postgresql/data
