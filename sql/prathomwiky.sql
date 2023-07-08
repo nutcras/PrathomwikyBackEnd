@@ -10,6 +10,7 @@ CREATE TABLE "public"."admin" (
     "adminsurname" character varying(100),
     "adminemail" character varying(100),
     "adminpassword" character varying(250),
+    CONSTRAINT "admin_adminemail" UNIQUE ("adminemail"),
     CONSTRAINT "admin_pkey" PRIMARY KEY ("adminid")
 ) WITH (oids = false);
 
