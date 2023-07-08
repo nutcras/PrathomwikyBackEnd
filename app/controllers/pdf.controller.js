@@ -14,7 +14,7 @@ exports.create = async (req, res) => {
 
   if (validate_req(req, res, [file, adminId])) return;
   // คำสั่ง SQL
-  const sql = `INSERT INTO pdf (id path, pdfname, adminid, createdate) VALUES ($1, $2, $3, $4, $5);`;
+  const sql = `INSERT INTO pdf (id, path, pdfname, adminid, createdate) VALUES ($1, $2, $3, $4, $5);`;
   const values = [generateRandomKey(), file.buffer, pdfName, adminId, formattedCreateDate];
 
   await database.create(sql, values, async (err, data) => {
